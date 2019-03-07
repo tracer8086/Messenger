@@ -1,0 +1,183 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Project ToolsVersion="15.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <Import Project="$(MSBuildExtensionsPath)\$(MSBuildToolsVersion)\Microsoft.Common.props" Condition="Exists('$(MSBuildExtensionsPath)\$(MSBuildToolsVersion)\Microsoft.Common.props')" />
+  <PropertyGroup>
+    <Configuration Condition=" '$(Configuration)' == '' ">Debug</Configuration>
+    <Platform Condition=" '$(Platform)' == '' ">AnyCPU</Platform>
+    <ProjectGuid>{566F7399-2C99-429A-ABF8-A09D44A73B7B}</ProjectGuid>
+    <OutputType>WinExe</OutputType>
+    <RootNamespace>MessengerClient</RootNamespace>
+    <AssemblyName>MessengerClient</AssemblyName>
+    <TargetFrameworkVersion>v4.6.1</TargetFrameworkVersion>
+    <FileAlignment>512</FileAlignment>
+    <AutoGenerateBindingRedirects>true</AutoGenerateBindingRedirects>
+  </PropertyGroup>
+  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|AnyCPU' ">
+    <PlatformTarget>AnyCPU</PlatformTarget>
+    <DebugSymbols>true</DebugSymbols>
+    <DebugType>full</DebugType>
+    <Optimize>false</Optimize>
+    <OutputPath>bin\Debug\</OutputPath>
+    <DefineConstants>DEBUG;TRACE</DefineConstants>
+    <ErrorReport>prompt</ErrorReport>
+    <WarningLevel>4</WarningLevel>
+  </PropertyGroup>
+  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Release|AnyCPU' ">
+    <PlatformTarget>AnyCPU</PlatformTarget>
+    <DebugType>pdbonly</DebugType>
+    <Optimize>true</Optimize>
+    <OutputPath>bin\Release\</OutputPath>
+    <DefineConstants>TRACE</DefineConstants>
+    <ErrorReport>prompt</ErrorReport>
+    <WarningLevel>4</WarningLevel>
+  </PropertyGroup>
+  <ItemGroup>
+    <Reference Include="NAudio, Version=1.8.4.0, Culture=neutral, processorArchitecture=MSIL">
+      <HintPath>..\packages\NAudio.1.8.4\lib\net35\NAudio.dll</HintPath>
+    </Reference>
+    <Reference Include="System" />
+    <Reference Include="System.Core" />
+    <Reference Include="System.Runtime.Serialization" />
+    <Reference Include="System.ServiceModel" />
+    <Reference Include="System.Xml.Linq" />
+    <Reference Include="System.Data.DataSetExtensions" />
+    <Reference Include="Microsoft.CSharp" />
+    <Reference Include="System.Data" />
+    <Reference Include="System.Deployment" />
+    <Reference Include="System.Drawing" />
+    <Reference Include="System.Net.Http" />
+    <Reference Include="System.Windows.Forms" />
+    <Reference Include="System.Xml" />
+  </ItemGroup>
+  <ItemGroup>
+    <Compile Include="Connected Services\MessengerService\Reference.cs">
+      <AutoGen>True</AutoGen>
+      <DesignTime>True</DesignTime>
+      <DependentUpon>Reference.svcmap</DependentUpon>
+    </Compile>
+    <Compile Include="Controllers\Interfaces\IDisconnectController.cs" />
+    <Compile Include="Entry\MessengerAppContext.cs" />
+    <Compile Include="BusinessLogic\Audio\Classes\AudioOutput.cs" />
+    <Compile Include="BusinessLogic\Audio\Interfaces\ISoundInput.cs" />
+    <Compile Include="BusinessLogic\Audio\Interfaces\ISoundOutput.cs" />
+    <Compile Include="BusinessLogic\Audio\Classes\MicrophoneInput.cs" />
+    <Compile Include="BusinessLogic\Audio\Classes\SoundOutputSource.cs" />
+    <Compile Include="BusinessLogic\Audio\Classes\SoundOutputSourceCollection.cs" />
+    <Compile Include="BusinessLogic\Networking\Classes\ServiceConnector.cs" />
+    <Compile Include="BusinessLogic\Networking\Interfaces\IConnectable.cs" />
+    <Compile Include="BusinessLogic\Networking\Interfaces\IConnectionHandler.cs" />
+    <Compile Include="BusinessLogic\Networking\Interfaces\ISoundSender.cs" />
+    <Compile Include="BusinessLogic\Networking\Interfaces\ITextSender.cs" />
+    <Compile Include="BusinessLogic\TextVerification\Classes\Transformers\MessageTransformer.cs" />
+    <Compile Include="BusinessLogic\TextVerification\Classes\Verifiers\MessageVerifier.cs" />
+    <Compile Include="BusinessLogic\TextVerification\Classes\Transformers\NicknameTransformer.cs" />
+    <Compile Include="BusinessLogic\TextVerification\Classes\Verifiers\NicknameVerifier.cs" />
+    <Compile Include="BusinessLogic\TextVerification\Interfaces\IStringTransformer.cs" />
+    <Compile Include="BusinessLogic\TextVerification\Interfaces\IStringVerifier.cs" />
+    <Compile Include="Controllers\Classes\Controller.cs" />
+    <Compile Include="Controllers\Interfaces\IConnectionController.cs" />
+    <Compile Include="Controllers\Interfaces\ISoundInputController.cs" />
+    <Compile Include="Controllers\Interfaces\ISoundOutputController.cs" />
+    <Compile Include="Controllers\Interfaces\ITextMessageController.cs" />
+    <Compile Include="Controllers\Interfaces\IUserController.cs" />
+    <Compile Include="Controllers\Interfaces\IUserSoundController.cs" />
+    <Compile Include="Controllers\Interfaces\IUserTextMessageController.cs" />
+    <Compile Include="GUI\Classes\ControlInvokation.cs" />
+    <Compile Include="GUI\Classes\EnterForm.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="GUI\Classes\EnterForm.Designer.cs">
+      <DependentUpon>EnterForm.cs</DependentUpon>
+    </Compile>
+    <Compile Include="GUI\Classes\ChatForm.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="GUI\Classes\ChatForm.Designer.cs">
+      <DependentUpon>ChatForm.cs</DependentUpon>
+    </Compile>
+    <Compile Include="GUI\Classes\ErrorForm.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="GUI\Classes\ErrorForm.Designer.cs">
+      <DependentUpon>ErrorForm.cs</DependentUpon>
+    </Compile>
+    <Compile Include="GUI\Interfaces\IControl.cs" />
+    <Compile Include="GUI\Interfaces\IEnterForm.cs" />
+    <Compile Include="GUI\Interfaces\IErrorMessageOutput.cs" />
+    <Compile Include="GUI\Interfaces\ITextMessageOutput.cs" />
+    <Compile Include="GUI\Interfaces\ITextMessageInput.cs" />
+    <Compile Include="GUI\Interfaces\IUserJoinHandler.cs" />
+    <Compile Include="GUI\Interfaces\IUserLeaveHandler.cs" />
+    <Compile Include="GUI\Interfaces\IUserList.cs" />
+    <Compile Include="Entry\Program.cs" />
+    <Compile Include="Properties\AssemblyInfo.cs" />
+    <EmbeddedResource Include="GUI\Classes\EnterForm.resx">
+      <DependentUpon>EnterForm.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="GUI\Classes\ChatForm.resx">
+      <DependentUpon>ChatForm.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="GUI\Classes\ErrorForm.resx">
+      <DependentUpon>ErrorForm.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Properties\Resources.resx">
+      <Generator>ResXFileCodeGenerator</Generator>
+      <LastGenOutput>Resources.Designer.cs</LastGenOutput>
+      <SubType>Designer</SubType>
+    </EmbeddedResource>
+    <Compile Include="Properties\Resources.Designer.cs">
+      <AutoGen>True</AutoGen>
+      <DependentUpon>Resources.resx</DependentUpon>
+    </Compile>
+    <None Include="Connected Services\MessengerService\Arrays.xsd">
+      <SubType>Designer</SubType>
+    </None>
+    <None Include="Connected Services\MessengerService\MessengerClient.MessengerService.EnterData.datasource">
+      <DependentUpon>Reference.svcmap</DependentUpon>
+    </None>
+    <None Include="Connected Services\MessengerService\MessengerService.Contracts.DataContracts.xsd">
+      <SubType>Designer</SubType>
+    </None>
+    <None Include="Connected Services\MessengerService\service.wsdl" />
+    <None Include="Connected Services\MessengerService\service.xsd">
+      <SubType>Designer</SubType>
+    </None>
+    <None Include="Connected Services\MessengerService\service1.xsd">
+      <SubType>Designer</SubType>
+    </None>
+    <None Include="packages.config" />
+    <None Include="Properties\Settings.settings">
+      <Generator>SettingsSingleFileGenerator</Generator>
+      <LastGenOutput>Settings.Designer.cs</LastGenOutput>
+    </None>
+    <Compile Include="Properties\Settings.Designer.cs">
+      <AutoGen>True</AutoGen>
+      <DependentUpon>Settings.settings</DependentUpon>
+      <DesignTimeSharedInput>True</DesignTimeSharedInput>
+    </Compile>
+    <None Include="TestUML.cd" />
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="App.config" />
+  </ItemGroup>
+  <ItemGroup>
+    <WCFMetadata Include="Connected Services\" />
+  </ItemGroup>
+  <ItemGroup>
+    <WCFMetadataStorage Include="Connected Services\MessengerService\" />
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="Connected Services\MessengerService\configuration91.svcinfo" />
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="Connected Services\MessengerService\configuration.svcinfo" />
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="Connected Services\MessengerService\Reference.svcmap">
+      <Generator>WCF Proxy Generator</Generator>
+      <LastGenOutput>Reference.cs</LastGenOutput>
+    </None>
+  </ItemGroup>
+  <ItemGroup />
+  <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
+</Project>
