@@ -18,7 +18,7 @@ namespace MessengerClient.Controllers.Classes
         IUserTextMessageController,
         IDisconnectController
     {
-        private string username;
+        private string _username;
 
         // GUI.
         public ITextMessageOutput TextMessageOutput { get; set; }
@@ -90,14 +90,13 @@ namespace MessengerClient.Controllers.Classes
 
             bool verificationResult = NicknameVerifier.VerifyString(nickname);
 
-            if (!verificationResult)
-            {
-                OutputError(DateTime.Now, "Connection controller", (String.IsNullOrWhiteSpace(nickname) ? "Nickname is empty; " : $"Incorrect nickname: \"{nickname}\"; ") + "nickname must consist of 4-16 digits or letters.");
+            if (verificationResult)
+                return true;
 
-                return false;
-            }
+            OutputError(DateTime.Now, "Connection controller", (String.IsNullOrWhiteSpace(nickname) ? "Nickname is empty; " : $"Incorrect nickname: \"{nickname}\"; ") + "nickname must consist of 4-16 digits or letters.");
 
-            return true;
+            return false;
+
         }
 
         private bool TransformNickname(ref string nickname)
@@ -123,16 +122,15 @@ namespace MessengerClient.Controllers.Classes
                 return false;
             }
 
-            bool verificationResult = MessageVerifier.VerifyString(message);
+            var verificationResult = MessageVerifier.VerifyString(message);
 
-            if (!verificationResult)
-            {
-                OutputError(DateTime.Now, "Connection controller", (String.IsNullOrWhiteSpace(message) ? "Message is empty; " : $"Incorrect message: {message}; ") + "message must consist of no more than 256 characters.");
+            if (verificationResult)
+                return true;
 
-                return false;
-            }
+            OutputError(DateTime.Now, "Connection controller", (String.IsNullOrWhiteSpace(message) ? "Message is empty; " : $"Incorrect message: {message}; ") + "message must consist of no more than 256 characters.");
 
-            return true;
+            return false;
+
         }
 
         private bool TransformMessage(ref string message)
@@ -166,9 +164,9 @@ namespace MessengerClient.Controllers.Classes
 
         private void AddNewUser(string name)
         {
-            if (SoundOutput != null && name != username)
+            if (SoundOutput != null && name != _username)
             {
-                bool result = SoundOutput.AddPlayer(name);
+                var result = SoundOutput.AddPlayer(name);
 
                 if (!result)
                     OutputError(DateTime.Now, "Audio output", $"Couldn't add audioplayer for user: {name}");
@@ -201,49 +199,49 @@ namespace MessengerClient.Controllers.Classes
 
         public void Enter()
         {
-            if (ConnectionHandler != null && !ConnectionHandler.IsConnected && EnterForm != null)
+            if (ConnectionHandler == null || ConnectionHandler.IsConnected || EnterForm == null)
+                return;
+
+            var nickname = EnterForm.GetUserDataForEnter();
+            _username = nickname;
+            var verificationResult = VerifyNickname(nickname);
+
+            if (!verificationResult)
+                return;
+
+            var transformationResult = TransformNickname(ref nickname);
+
+            if (!transformationResult)
+                return;
+
+            var result = ConnectionHandler.Enter(nickname, out string connectorMessage);
+
+            if (!result)
             {
-                string nickname = EnterForm.GetUserDataForEnter();
-                username = nickname;
-                bool verificationResult = VerifyNickname(nickname);
-
-                if (!verificationResult)
-                    return;
-
-                bool transformationResult = TransformNickname(ref nickname);
-
-                if (!transformationResult)
-                    return;
-
-                bool result = ConnectionHandler.Enter(nickname, out string connectorMessage);
-
-                if (!result)
-                {
-                    OutputError(DateTime.Now, "Service connector", connectorMessage);
-                    return;
-                }
-
-                HideControl(EnterForm);
-                ShowControl(TextMessageOutput);
-                ShowControl(UserList);
-                ShowControl(TextMessageInput);
-
-                if (SoundInput != null && !SoundInput.IsEnabled)
-                    SoundInput.Enable();
-
-                UserJoinHandler?.NotifyClientJoined(DateTime.Now, username);
+                OutputError(DateTime.Now, "Service connector", connectorMessage);
+                return;
             }
+
+            HideControl(EnterForm);
+            ShowControl(TextMessageOutput);
+            ShowControl(UserList);
+            ShowControl(TextMessageInput);
+
+            if (SoundInput != null && !SoundInput.IsEnabled)
+                SoundInput.Enable();
+
+            UserJoinHandler?.NotifyClientJoined(DateTime.Now, _username);
         }
 
         public void GetSoundFromUser(string username, byte[] sound)
         {
-            if (SoundOutput != null)
-            {
-                bool result = SoundOutput.PlaySound(username, sound);
+            if (SoundOutput == null)
+                return;
 
-                if (!result)
-                    OutputError(DateTime.Now, "Sound output", $"Couldn't play sound for user: {username}");
-            }
+            var result = SoundOutput.PlaySound(username, sound);
+
+            if (!result)
+                OutputError(DateTime.Now, "Sound output", $"Couldn't play sound for user: {username}");
         }
 
         public void GetTextMessageFromUser(string username, string message) => TextMessageOutput?.OutputMessage(DateTime.Now, username, message);
@@ -260,7 +258,7 @@ namespace MessengerClient.Controllers.Classes
         {
             if (SoundOutput != null)
             {
-                bool result = SoundOutput.DeletePlayer(name);
+                var result = SoundOutput.DeletePlayer(name);
 
                 if (!result)
                     OutputError(DateTime.Now, "Sound output", $"Couldn't remove audioplayer for user: {name}");
@@ -272,21 +270,21 @@ namespace MessengerClient.Controllers.Classes
 
         public void SendTextMessage()
         {
-            if (TextSender != null && TextSender.IsConnected && TextMessageInput != null)
-            {
-                string message = TextMessageInput.GetEnteredTextMessage();
-                bool verificationResult = VerifyMessage(message);
+            if (TextSender == null || !TextSender.IsConnected || TextMessageInput == null)
+                return;
 
-                if (!verificationResult)
-                    return;
+            var message = TextMessageInput.GetEnteredTextMessage();
+            var verificationResult = VerifyMessage(message);
 
-                bool transformationResult = TransformMessage(ref message);
+            if (!verificationResult)
+                return;
 
-                if (!transformationResult)
-                    return;
+            var transformationResult = TransformMessage(ref message);
 
-                TextSender.SendTextMessage(message);
-            }
+            if (!transformationResult)
+                return;
+
+            TextSender.SendTextMessage(message);
         }
 
         public void HandleDisconnect(string message)
