@@ -61,9 +61,9 @@ namespace MessengerClient.BusinessLogic.Networking.Classes
             if (!enterData.Status)
                 return false;
 
-            _userId = enterData.ID;
+            _userId = enterData.Id;
 
-            string[] userList = _client.GetUserList();
+            var userList = _client.GetUserList();
 
             UserController?.AddConnectedUsers(userList);
 
@@ -134,7 +134,7 @@ namespace MessengerClient.BusinessLogic.Networking.Classes
         {
             try
             {
-                _client.SendAudioMessage(new SoundToService { UserID = _userId, SoundBytes = sound });
+                _client.SendAudioMessage(new SoundToService { UserId = _userId, SoundBytes = sound });
             }
             catch
             {
@@ -146,7 +146,7 @@ namespace MessengerClient.BusinessLogic.Networking.Classes
         {
             try
             {
-                _client.SendTextMessage(new MessageToService { UserID = _userId, Text = message });
+                _client.SendTextMessage(new MessageToService { UserId = _userId, Text = message });
             }
             catch
             {

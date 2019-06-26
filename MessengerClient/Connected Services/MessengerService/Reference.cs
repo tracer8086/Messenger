@@ -23,7 +23,7 @@ namespace MessengerClient.MessengerService {
         private System.Runtime.Serialization.ExtensionDataObject extensionDataField;
         
         [System.Runtime.Serialization.OptionalFieldAttribute()]
-        private uint IDField;
+        private uint IdField;
         
         [System.Runtime.Serialization.OptionalFieldAttribute()]
         private string MessageField;
@@ -42,14 +42,14 @@ namespace MessengerClient.MessengerService {
         }
         
         [System.Runtime.Serialization.DataMemberAttribute()]
-        public uint ID {
+        public uint Id {
             get {
-                return this.IDField;
+                return this.IdField;
             }
             set {
-                if ((this.IDField.Equals(value) != true)) {
-                    this.IDField = value;
-                    this.RaisePropertyChanged("ID");
+                if ((this.IdField.Equals(value) != true)) {
+                    this.IdField = value;
+                    this.RaisePropertyChanged("Id");
                 }
             }
         }
@@ -103,7 +103,7 @@ namespace MessengerClient.MessengerService {
         private string TextField;
         
         [System.Runtime.Serialization.OptionalFieldAttribute()]
-        private uint UserIDField;
+        private uint UserIdField;
         
         [global::System.ComponentModel.BrowsableAttribute(false)]
         public System.Runtime.Serialization.ExtensionDataObject ExtensionData {
@@ -129,14 +129,14 @@ namespace MessengerClient.MessengerService {
         }
         
         [System.Runtime.Serialization.DataMemberAttribute()]
-        public uint UserID {
+        public uint UserId {
             get {
-                return this.UserIDField;
+                return this.UserIdField;
             }
             set {
-                if ((this.UserIDField.Equals(value) != true)) {
-                    this.UserIDField = value;
-                    this.RaisePropertyChanged("UserID");
+                if ((this.UserIdField.Equals(value) != true)) {
+                    this.UserIdField = value;
+                    this.RaisePropertyChanged("UserId");
                 }
             }
         }
@@ -164,7 +164,7 @@ namespace MessengerClient.MessengerService {
         private byte[] SoundBytesField;
         
         [System.Runtime.Serialization.OptionalFieldAttribute()]
-        private uint UserIDField;
+        private uint UserIdField;
         
         [global::System.ComponentModel.BrowsableAttribute(false)]
         public System.Runtime.Serialization.ExtensionDataObject ExtensionData {
@@ -190,14 +190,14 @@ namespace MessengerClient.MessengerService {
         }
         
         [System.Runtime.Serialization.DataMemberAttribute()]
-        public uint UserID {
+        public uint UserId {
             get {
-                return this.UserIDField;
+                return this.UserIdField;
             }
             set {
-                if ((this.UserIDField.Equals(value) != true)) {
-                    this.UserIDField = value;
-                    this.RaisePropertyChanged("UserID");
+                if ((this.UserIdField.Equals(value) != true)) {
+                    this.UserIdField = value;
+                    this.RaisePropertyChanged("UserId");
                 }
             }
         }
