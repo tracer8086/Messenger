@@ -6,7 +6,7 @@ namespace MessengerService.Contracts.DataContracts
     public class SoundToService
     {
         [DataMember]
-        public uint UserID { get; set; }
+        public uint UserId { get; set; }
 
         [DataMember]
         public byte[] SoundBytes { get; set; }

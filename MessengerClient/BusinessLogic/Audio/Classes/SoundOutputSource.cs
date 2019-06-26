@@ -6,62 +6,56 @@ namespace MessengerClient.BusinessLogic.Audio.Classes
     public class SoundOutputSource
     {
         // For sound output using output device.
-        private WaveOut outputSound;
+        private readonly WaveOut _outputSound;
         // Buffer for output.
-        private BufferedWaveProvider bufferStream;
-        private bool isDisposed;
-        private bool mute;
-        private float savedVolume;
-        private object lockObj;
+        private readonly BufferedWaveProvider _bufferStream;
+        private bool _isDisposed;
+        private bool _mute;
+        private float _savedVolume;
+        private readonly object _lockObj;
 
         public bool IsPlaying { get; private set; }
-        public bool IsMuted => mute;
+        public bool IsMuted => _mute;
         public float Volume
         {
-            get
-            {
-                if (mute)
-                    return savedVolume;
-
-                return outputSound.Volume;
-            }
+            get => _mute ? _savedVolume : _outputSound.Volume;
 
             set
             {
-                if (!mute)
-                    outputSound.Volume = value;
+                if (!_mute)
+                    _outputSound.Volume = value;
                 else
-                    savedVolume = value;
+                    _savedVolume = value;
             }
         }
 
         public SoundOutputSource()
         {
-            outputSound = new WaveOut();
-            bufferStream = new BufferedWaveProvider(new WaveFormat(8000, 16, 1));
-            outputSound.Init(bufferStream);
+            _outputSound = new WaveOut();
+            _bufferStream = new BufferedWaveProvider(new WaveFormat(8000, 16, 1));
+            _outputSound.Init(_bufferStream);
             IsPlaying = false;
-            isDisposed = false;
-            mute = false;
-            lockObj = new Object();
+            _isDisposed = false;
+            _mute = false;
+            _lockObj = new object();
         }
 
         public bool PlaySound(byte[] sound)
         {
-            if (!IsPlaying || isDisposed)
+            if (!IsPlaying || _isDisposed)
                 return false;
 
             // If sound array is too big.
             try
             {
-                if (outputSound != null)
+                if (_outputSound != null)
                 {
-                    bufferStream.AddSamples(sound, 0, sound.GetLength(0));
+                    _bufferStream.AddSamples(sound, 0, sound.GetLength(0));
                 }
             }
             catch
             {
-                bufferStream.ClearBuffer();
+                _bufferStream.ClearBuffer();
                 return false;
             }
 
@@ -70,58 +64,56 @@ namespace MessengerClient.BusinessLogic.Audio.Classes
 
         public bool Play()
         {
-            if (!IsPlaying)
-            {
-                outputSound.Play();
-                IsPlaying = true;
+            if (IsPlaying)
+                return false;
 
-                return true;
-            }
+            _outputSound.Play();
+            IsPlaying = true;
 
-            return false;
+            return true;
+
         }
 
         public bool Stop()
         {
-            if (IsPlaying)
-            {
-                outputSound.Stop();
-                IsPlaying = false;
+            if (!IsPlaying)
+                return false;
 
-                return true;
-            }
+            _outputSound.Stop();
+            IsPlaying = false;
 
-            return false;
+            return true;
+
         }
 
         public void Mute()
         {
-            if (!mute)
+            if (!_mute)
             {
-                savedVolume = outputSound.Volume;
-                outputSound.Volume = 0;
-                mute = true;
+                _savedVolume = _outputSound.Volume;
+                _outputSound.Volume = 0;
+                _mute = true;
             }
             else
             {
-                outputSound.Volume = savedVolume;
-                mute = false;
+                _outputSound.Volume = _savedVolume;
+                _mute = false;
             }
         }
 
         private void CleanUp()
         {
-            if (!isDisposed)
+            if (_isDisposed)
+                return;
+
+            lock (_lockObj)
             {
-                lock (lockObj)
-                {
-                    if (!isDisposed)
-                    {
-                        Stop();
-                        outputSound?.Dispose();
-                        isDisposed = true;
-                    }
-                }
+                if (_isDisposed)
+                    return;
+
+                Stop();
+                _outputSound?.Dispose();
+                _isDisposed = true;
             }
         }
 

@@ -7,33 +7,31 @@ namespace MessengerClient.BusinessLogic.Audio.Classes
 {
     public class SoundOutputSourceCollection<IdType> : IEnumerable<SoundOutputSource>
     {
-        private ConcurrentDictionary<IdType, SoundOutputSource> outputSources;
+        private readonly ConcurrentDictionary<IdType, SoundOutputSource> _outputSources;
 
         public SoundOutputSourceCollection()
         {
-            outputSources = new ConcurrentDictionary<IdType, SoundOutputSource>();
+            _outputSources = new ConcurrentDictionary<IdType, SoundOutputSource>();
         }
 
-        public bool TryGet(IdType id, out SoundOutputSource soundSource) => outputSources.TryGetValue(id, out soundSource);
+        public bool TryGet(IdType id, out SoundOutputSource soundSource) => _outputSources.TryGetValue(id, out soundSource);
 
         public bool AddSource(IdType id)
         {
-            bool exists = outputSources.ContainsKey(id);
-            SoundOutputSource newSource = new SoundOutputSource();
+            var exists = _outputSources.ContainsKey(id);
+            var newSource = new SoundOutputSource();
 
             if (exists)
                 return false;
-            else
-            {
-                newSource.Play();
 
-                return outputSources.TryAdd(id, newSource);
-            }
+            newSource.Play();
+
+            return _outputSources.TryAdd(id, newSource);
         }
 
         public bool DeleteSource(IdType id)
         {
-            bool result = outputSources.TryGetValue(id, out SoundOutputSource soundSource);
+            var result = _outputSources.TryGetValue(id, out var soundSource);
 
             if (!result)
                 return false;
@@ -41,18 +39,18 @@ namespace MessengerClient.BusinessLogic.Audio.Classes
             soundSource.Stop();
             soundSource.Dispose();
 
-            return outputSources.TryRemove(id, out SoundOutputSource temp);
+            return _outputSources.TryRemove(id, out _);
         }
 
         public void Clear()
         {
-            IdType[] ids = outputSources.Keys.ToArray();
+            var ids = _outputSources.Keys.ToArray();
 
-            foreach (IdType id in ids)
+            foreach (var id in ids)
                 DeleteSource(id);
         }
 
-        public IEnumerator<SoundOutputSource> GetEnumerator() => outputSources.Values.GetEnumerator();
+        public IEnumerator<SoundOutputSource> GetEnumerator() => _outputSources.Values.GetEnumerator();
 
         IEnumerator IEnumerable.GetEnumerator() => GetEnumerator();
     }

@@ -6,7 +6,7 @@ namespace MessengerService.Contracts.DataContracts
     public class EnterData
     {
         [DataMember]
-        public uint ID { get; set; }
+        public uint Id { get; set; }
 
         [DataMember]
         public bool Status { get; set; }

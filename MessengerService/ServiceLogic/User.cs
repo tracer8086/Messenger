@@ -6,8 +6,8 @@ namespace MessengerService.ServiceLogic
 {
     public class User
     {
-        private IClientCallback clientCallback;
-        private IClientChannel clientChannel;
+        private readonly IClientCallback _clientCallback;
+        private readonly IClientChannel _clientChannel;
 
         public string Name { get; }
         public bool IsReady { get; set; }
@@ -15,21 +15,21 @@ namespace MessengerService.ServiceLogic
         public User(string name, IClientCallback clientCallback, IClientChannel clientChannel)
         {
             Name = name;
-            this.clientCallback = clientCallback;
+            this._clientCallback = clientCallback;
             IsReady = false;
-            this.clientChannel = clientChannel;
+            this._clientChannel = clientChannel;
         }
 
-        public void ReceiveTextMessage(MessageToUser message) => clientCallback?.ReceiveTextMessage(message);
+        public void ReceiveTextMessage(MessageToUser message) => _clientCallback?.ReceiveTextMessage(message);
 
-        public void ReceiveAudioMessage(SoundToUser soundMessage) => clientCallback?.ReceiveAudioMessage(soundMessage);
+        public void ReceiveAudioMessage(SoundToUser soundMessage) => _clientCallback?.ReceiveAudioMessage(soundMessage);
 
-        public void NotifyUserConnected(string username) => clientCallback?.NotifyUserConnected(username);
+        public void NotifyUserConnected(string username) => _clientCallback?.NotifyUserConnected(username);
 
-        public void NotifyUserDisconnected(string username) => clientCallback?.NotifyUserDisconnected(username);
+        public void NotifyUserDisconnected(string username) => _clientCallback?.NotifyUserDisconnected(username);
 
-        public void Pulse() => clientCallback?.MakePulse();
+        public void Pulse() => _clientCallback?.MakePulse();
 
-        public void AbortConnection() => clientChannel?.Abort();
+        public void AbortConnection() => _clientChannel?.Abort();
     }
 }

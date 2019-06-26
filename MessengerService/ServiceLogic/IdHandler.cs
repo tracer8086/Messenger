@@ -8,51 +8,51 @@ namespace MessengerService.ServiceLogic
     [Synchronization]
     public class IdHandler : ContextBoundObject
     {
-        private HashSet<uint> freeIDs;
-        private uint amount;
+        private readonly HashSet<uint> _freeIDs;
+        private uint _amount;
 
         public uint MaxCount { get; }
-        public bool HasFreeID => amount > 0;
+        public bool HasFreeId => _amount > 0;
 
         public IdHandler(uint maxCount)
         {
-            freeIDs = new HashSet<uint>();
+            _freeIDs = new HashSet<uint>();
             MaxCount = maxCount;
-            amount = MaxCount;
+            _amount = MaxCount;
 
             for (uint i = 0; i < MaxCount; i++)
-                freeIDs.Add(i);
+                _freeIDs.Add(i);
         }
 
         public uint GetId()
         {
-            uint freeID = freeIDs.First();
+            var freeId = _freeIDs.First();
 
-            freeIDs.Remove(freeID);
-            amount--;
+            _freeIDs.Remove(freeId);
+            _amount--;
 
-            return freeID;
+            return freeId;
         }
 
-        public bool TryGetId(out uint freeID)
+        public bool TryGetId(out uint freeId)
         {
-            freeID = 0;
+            freeId = 0;
 
-            if (!HasFreeID)
+            if (!HasFreeId)
                 return false;
 
-            freeID = GetId();
+            freeId = GetId();
 
             return true;
         }
 
-        public void ReleaseID(uint releasedID)
+        public void ReleaseId(uint releasedId)
         {
-            if (releasedID > MaxCount - 1)
+            if (releasedId > MaxCount - 1)
                 return;
 
-            freeIDs.Add(releasedID);
-            amount++;
+            _freeIDs.Add(releasedId);
+            _amount++;
         }
     }
 }

@@ -7,70 +7,70 @@ using System.ServiceModel;
 
 namespace MessengerService.ServiceLogic
 {
-    public class UserCollection<IdType> : IEnumerable<KeyValuePair<IdType, User>>
+    public class UserCollection<TIdType> : IEnumerable<KeyValuePair<TIdType, User>>
     {
-        private ConcurrentDictionary<IdType, User> userDict;
-        private object userCollectionLocker;
+        private readonly ConcurrentDictionary<TIdType, User> _userDict;
+        private readonly object _userCollectionLocker;
 
         public UserCollection()
         {
-            userDict = new ConcurrentDictionary<IdType, User>();
-            userCollectionLocker = new object();
+            _userDict = new ConcurrentDictionary<TIdType, User>();
+            _userCollectionLocker = new object();
         }
 
-        public bool Contains(IdType id)
+        public bool Contains(TIdType id)
         {
             bool result;
 
-            lock (userCollectionLocker)
-                result =  userDict.ContainsKey(id);
+            lock (_userCollectionLocker)
+                result =  _userDict.ContainsKey(id);
 
             return result;
         }
 
-        public User this[IdType id]
+        public User this[TIdType id]
         {
             get
             {
                 User user;
 
-                lock (userCollectionLocker)
-                    user = userDict[id];
+                lock (_userCollectionLocker)
+                    user = _userDict[id];
 
                 return user;
             }
         }
 
-        public void AddUser(IdType id, string name, IClientCallback clientCallback, IClientChannel clientChannel)
+        public void AddUser(TIdType id, string name, IClientCallback clientCallback, IClientChannel clientChannel)
         {
-            if (userDict.ContainsKey(id))
+            if (_userDict.ContainsKey(id))
                 return;
 
-            userDict.TryAdd(id, new User(name, clientCallback, clientChannel));
+            _userDict.TryAdd(id, new User(name, clientCallback, clientChannel));
         }
 
-        public void DeleteUser(IdType id)
+        public void DeleteUser(TIdType id)
         {
-            if (!userDict.ContainsKey(id))
+            if (!_userDict.ContainsKey(id))
                 return;
 
-            userDict.TryRemove(id, out User temp);
+            _userDict.TryRemove(id, out _);
         }
 
-        public void Clear() => userDict.Clear();
+        public void Clear() => _userDict.Clear();
 
         public string[] GetUserNames()
         {
             string[] userNames;
 
-            lock (userCollectionLocker)
-                userNames = (from elem in userDict
+            lock (_userCollectionLocker)
+                userNames = (from elem in _userDict
                              select elem.Value.Name).ToArray();
 
             return userNames;
         }
 
-        public IEnumerator<KeyValuePair<IdType, User>> GetEnumerator() => userDict.GetEnumerator();
+        public IEnumerator<KeyValuePair<TIdType, User>> GetEnumerator() => _userDict.GetEnumerator();
 
         IEnumerator IEnumerable.GetEnumerator() => GetEnumerator();
     }

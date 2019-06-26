@@ -14,7 +14,7 @@ namespace MessengerClient.BusinessLogic.Audio.Classes
 
         private bool AccessSources(IdType id, Action<SoundOutputSource> action)
         {
-            bool result = outputSources.TryGet(id, out SoundOutputSource player);
+            var result = outputSources.TryGet(id, out SoundOutputSource player);
 
             if (!result)
                 return false;
@@ -26,7 +26,7 @@ namespace MessengerClient.BusinessLogic.Audio.Classes
 
         private bool AccessSources(IdType id, Func<SoundOutputSource, bool> func)
         {
-            bool result = outputSources.TryGet(id, out SoundOutputSource player);
+            var result = outputSources.TryGet(id, out SoundOutputSource player);
 
             if (!result || player == null)
                 return false;

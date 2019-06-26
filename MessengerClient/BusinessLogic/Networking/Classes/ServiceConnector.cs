@@ -12,11 +12,11 @@ namespace MessengerClient.BusinessLogic.Networking.Classes
     [CallbackBehavior(ConcurrencyMode = ConcurrencyMode.Multiple, IncludeExceptionDetailInFaults = true)]
     public class ServiceConnector : IConnectionHandler, ISoundSender, ITextSender, IMessengerServiceCallback
     {
-        private const int pulseInterval = 2000;
+        private const int PulseInterval = 2000;
 
-        private MessengerServiceClient client;
-        private CancellationTokenSource tokenSource;
-        private uint userId;
+        private MessengerServiceClient _client;
+        private readonly CancellationTokenSource _tokenSource;
+        private uint _userId;
 
         public IUserController UserController { get; set; }
         public IUserSoundController SoundController { get; set; }
@@ -26,27 +26,27 @@ namespace MessengerClient.BusinessLogic.Networking.Classes
 
         public ServiceConnector()
         {
-            client = new MessengerServiceClient(new InstanceContext(this));
-            tokenSource = new CancellationTokenSource();
+            _client = new MessengerServiceClient(new InstanceContext(this));
+            _tokenSource = new CancellationTokenSource();
             IsConnected = false;
         }
 
         private void HandleDisconnect()
         {
             IsConnected = false;
-            client = null;
+            _client = null;
         }
 
         public bool Enter(string nickname, out string message)
         {
-            if (client == null)
-                client = new MessengerServiceClient(new InstanceContext(this));
+            if (_client == null)
+                _client = new MessengerServiceClient(new InstanceContext(this));
 
             EnterData enterData;
 
             try
             {
-                enterData = client.EnterService(nickname);
+                enterData = _client.EnterService(nickname);
             }
             catch
             {
@@ -61,20 +61,20 @@ namespace MessengerClient.BusinessLogic.Networking.Classes
             if (!enterData.Status)
                 return false;
 
-            userId = enterData.ID;
+            _userId = enterData.ID;
 
-            string[] userList = client.GetUserList();
+            string[] userList = _client.GetUserList();
 
             UserController?.AddConnectedUsers(userList);
 
             try
             {
-                client.NotifyClientIsReady(userId);
+                _client.NotifyClientIsReady(_userId);
                 IsConnected = true;
             }
             catch
             {
-                client.Abort();
+                _client.Abort();
                 HandleDisconnect();
                 message = "Couldn't notify server that client is ready.";
 
@@ -85,18 +85,18 @@ namespace MessengerClient.BusinessLogic.Networking.Classes
             {
                 for (; ; )
                 {
-                    Task.Delay(pulseInterval).Wait();
+                    Task.Delay(PulseInterval).Wait();
 
                     try
                     {
-                        if (tokenSource.IsCancellationRequested)
+                        if (_tokenSource.IsCancellationRequested)
                             break;
 
-                        client.Pulse(userId);
+                        _client.Pulse(_userId);
                     }
                     catch
                     {
-                        client.Abort();
+                        _client.Abort();
                         HandleDisconnect();
                         DisconnectController?.HandleDisconnect("Connection aborted.");
                         break;
@@ -111,11 +111,13 @@ namespace MessengerClient.BusinessLogic.Networking.Classes
         {
             try
             {
-                tokenSource.Cancel();
-                client.LeaveService(userId);
+                _tokenSource.Cancel();
+                _client.LeaveService(_userId);
             }
             catch
-            { }
+            {
+                // ignored
+            }
 
             HandleDisconnect();
         }
@@ -132,20 +134,24 @@ namespace MessengerClient.BusinessLogic.Networking.Classes
         {
             try
             {
-                client.SendAudioMessage(new SoundToService() { UserID = userId, SoundBytes = sound });
+                _client.SendAudioMessage(new SoundToService { UserID = _userId, SoundBytes = sound });
             }
             catch
-            { }
+            {
+                // ignored
+            }
         }
 
         public void SendTextMessage(string message)
         {
             try
             {
-                client.SendTextMessage(new MessageToService() { UserID = userId, Text = message });
+                _client.SendTextMessage(new MessageToService { UserID = _userId, Text = message });
             }
             catch
-            { }
+            {
+                // ignored
+            }
         }
 
         public void MakePulse() { }
