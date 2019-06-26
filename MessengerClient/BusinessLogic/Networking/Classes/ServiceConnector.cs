@@ -4,8 +4,6 @@ using MessengerClient.BusinessLogic.Networking.Interfaces;
 using MessengerClient.MessengerService;
 using MessengerClient.Controllers.Interfaces;
 using System.ServiceModel;
-using System;
-using System.Runtime.Remoting.Contexts;
 
 namespace MessengerClient.BusinessLogic.Networking.Classes
 {
